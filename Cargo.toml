@@ -6,7 +6,7 @@ description = "A decimal type with no NaN and Infinity"
 documentation = "https://docs.rs/pure_dec"
 repository = "https://github.com/mmrath/pure_dec"
 readme = "README.md"
-keywords = ["decimal", "float", "NaN", "finite", "double", "infinity"]
+keywords = ["decimal", "float", "NaN", "ordered", "infinity"]
 license = "Apache-2.0"
 
 [dependencies]
