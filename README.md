@@ -5,7 +5,7 @@
 [![Crates.io](https://img.shields.io/crates/v/pure_decimal.svg)](https://crates.io/crates/pure_decimal)
 ![Apache license](https://img.shields.io/crates/l/pure_decimal.svg)
 
-This is a wrapper around [decimal](https://crates.io/crates/decimal) for decimal which does not contain [infinity](https://en.wikipedia.org/wiki/Infinity) and [NaN](https://en.wikipedia.org/wiki/NaN). The requirement such a Decimal is to have a decimal which can be used as keys in Maps and can be ordered.
+This crate provides a `Decimal` type which is a wrapper around [decimal](https://crates.io/crates/decimal). This `Decimal` does not contain [infinity](https://en.wikipedia.org/wiki/Infinity) and [NaN](https://en.wikipedia.org/wiki/NaN). The objects of this type is can be used as keys in Maps and can be ordered.
 
 
 # Important notice

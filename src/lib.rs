@@ -7,6 +7,11 @@ extern crate serde;
 #[cfg(test)]
 extern crate serde_json;
 
+
+
+
+
+
 #[macro_use]
 mod macros {
     /// A macro to construct Decimal literals.
@@ -16,9 +21,13 @@ mod macros {
     /// ```
     /// # #[macro_use]
     /// # extern crate pure_decimal;
+    ///
+    /// # use std::collections::BTreeMap;
+    ///
     /// # fn main() {
     /// assert!(decimal!(0).is_zero());
     /// assert!(decimal!(-0.1).is_negative());
+    ///
     /// # }
     /// ```
     #[macro_export]

@@ -9,8 +9,28 @@ use serde;
 
 use super::error::Error;
 
-/// Decimal is a struct which encloses a `d128` from `decimal` create. There is no NaN and infinity
-/// represented by this crate. All the method from Decimal are delegated to `d128`
+
+///
+/// # Examples:
+/// ```
+/// # #[macro_use]
+/// # extern crate pure_decimal;
+///
+/// # use std::collections::BTreeMap;
+///
+/// # fn main() {
+///
+/// // Use as keys in BTree
+/// let mut map = BTreeMap::new();
+/// map.insert(decimal!(1.0), decimal!(1.0));
+/// map.insert(decimal!(1), decimal!(2.0));
+///
+/// assert!(map.len() == 1);
+/// assert!(map.contains_key(&decimal!(1.00)));
+/// assert!(map.get(&decimal!(1.00)) == Some(&decimal!(2.0)));
+///
+/// # }
+/// ```
 #[derive(Clone, Copy)]
 pub struct Decimal(d128);
 
@@ -370,8 +390,8 @@ mod tests {
     #[test]
     fn test_serde() {
         let mut a = BTreeMap::new();
-        a.insert("price".to_string(), d128!(432.232));
-        a.insert("amt".to_string(), d128!(9.9));
+        a.insert("price".to_string(), decimal!(432.232));
+        a.insert("amt".to_string(), decimal!(9.9));
         assert_eq!(
             &to_string(&a).unwrap(),
             "{\"amt\":\"9.9\",\"price\":\"432.232\"}"
