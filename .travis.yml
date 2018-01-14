@@ -1,0 +1,26 @@
+---
+language: rust
+rust:
+  - stable
+  - beta
+os:
+  - linux
+sudo: false
+
+
+cache:
+  cargo: true
+
+before_script:
+  - cargo clean
+
+script:
+  # Build without unstable flag
+  - cargo build
+
+  # Test
+  - cargo test
+
+notifications:
+  email:
+    on_success: never

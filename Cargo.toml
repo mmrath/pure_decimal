@@ -1,0 +1,20 @@
+[package]
+name = "pure_decimal"
+version = "0.0.1"
+authors = ["Murali Mohan Rath <murali@mmrath.com>"]
+description = "A decimal type with no NaN and Infinity"
+documentation = "https://docs.rs/pure_dec"
+repository = "https://github.com/mmrath/pure_dec"
+readme = "README.md"
+keywords = ["decimal", "float", "NaN", "finite", "double", "infinity"]
+license = "Apache-2.0"
+
+[dependencies]
+decimal = "2.0"
+serde = { optional = true, version = "1" }
+
+[dev-dependencies]
+serde_json = "1"
+
+[features]
+default = ["serde"]
