@@ -1,6 +1,6 @@
 [package]
 name = "pure_decimal"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Murali Mohan Rath <murali@mmrath.com>"]
 description = "A decimal type with no NaN and Infinity"
 documentation = "https://docs.rs/pure_dec"
