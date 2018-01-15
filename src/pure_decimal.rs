@@ -3,9 +3,10 @@ use std::str::FromStr;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::default::Default;
-use std::ops::{Add, Div, Mul, Neg, Rem, Sub};
-
+use std::ops::{Add, Div, Mul, Neg, Rem, Sub, AddAssign, SubAssign, MulAssign};
+use std::borrow::Borrow;
 use serde;
+use std::iter::Sum;
 
 use super::error::Error;
 
@@ -365,6 +366,31 @@ macro_rules! guarded_binary_op {
 guarded_binary_op!(impl Div, div, Decimal);
 guarded_binary_op!(impl Rem, rem, Decimal);
 
+
+macro_rules! unary_assign_op {
+    ($(#[$attr:meta])* impl $op:ident, $method:ident, $t:ident) => {
+        $(#[$attr])*
+        impl $op<$t> for $t {
+            fn $method(&mut self, other: $t) {
+                (self.0).$method(other.0);
+            }
+        }
+    }
+}
+
+unary_assign_op!(impl AddAssign, add_assign, Decimal);
+unary_assign_op!(impl SubAssign, sub_assign, Decimal);
+unary_assign_op!(impl MulAssign, mul_assign, Decimal);
+
+
+impl<T> Sum<T> for Decimal where T: Borrow<Decimal> {
+    fn sum<I: IntoIterator<Item = T>>(iter: I) -> Decimal {
+        iter.into_iter()
+            .fold(Decimal::zero(), |acc, val| acc + val.borrow())
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
 
@@ -420,6 +446,26 @@ mod tests {
     fn as_ref_operand() {
         assert_eq!(decimal!(1.1), decimal!(1.1).min(decimal!(2.2)));
         assert_eq!(decimal!(1.1), decimal!(1.1).min(&decimal!(2.2)));
+    }
+
+
+    #[test]
+    fn assign_op() {
+        let mut x = decimal!(1);
+        x += decimal!(2);
+        assert_eq!(x, decimal!(3));
+        x *= decimal!(3);
+        assert_eq!(x, decimal!(9));
+        x -= decimal!(1);
+        assert_eq!(x, decimal!(8));
+        
+    }
+
+    #[test]
+    fn test_sum() {
+        let decimals = vec![decimal!(1), decimal!(2), decimal!(3), decimal!(4)];
+        assert_eq!(decimal!(10), decimals.iter().sum());
+        assert_eq!(decimal!(10), decimals.into_iter().sum());
     }
 
 }
