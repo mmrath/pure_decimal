@@ -141,8 +141,8 @@ impl fmt::LowerHex for Decimal {
 #[cfg(feature = "serde")]
 impl serde::ser::Serialize for Decimal {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::ser::Serializer,
+        where
+            S: serde::ser::Serializer,
     {
         serializer.serialize_str(&self.0.to_string())
     }
@@ -151,10 +151,10 @@ impl serde::ser::Serialize for Decimal {
 #[cfg(feature = "serde")]
 impl<'de> serde::de::Deserialize<'de> for Decimal {
     fn deserialize<D>(deserializer: D) -> Result<Decimal, D::Error>
-    where
-        D: serde::de::Deserializer<'de>,
+        where
+            D: serde::de::Deserializer<'de>,
     {
-        deserializer.deserialize_str(SerdeDecimalVisitor)
+        deserializer.deserialize_any(SerdeDecimalVisitor)
     }
 }
 
@@ -171,11 +171,34 @@ impl<'de> serde::de::Visitor<'de> for SerdeDecimalVisitor {
     }
 
     fn visit_str<E>(self, s: &str) -> Result<Decimal, E>
-    where
-        E: serde::de::Error,
+        where
+            E: serde::de::Error,
     {
         use serde::de::Unexpected;
         Decimal::from_str(s).map_err(|_| E::invalid_value(Unexpected::Str(s), &self))
+    }
+
+
+    fn visit_f64<E>(self, value: f64) -> Result<Decimal, E>
+        where
+            E: serde::de::Error,
+    {
+        use serde::de::Unexpected;
+        Decimal::from_str(&value.to_string()).map_err(|_| E::invalid_value(Unexpected::Float(value), &self))
+    }
+
+    fn visit_i64<E>(self, value: i64) -> Result<Decimal, E>
+        where
+            E: serde::de::Error,
+    {
+        Ok(Decimal::from(value))
+    }
+
+    fn visit_u64<E>(self, value: u64) -> Result<Decimal, E>
+        where
+            E: serde::de::Error,
+    {
+        Ok(Decimal::from(value))
     }
 }
 
@@ -384,7 +407,7 @@ unary_assign_op!(impl MulAssign, mul_assign, Decimal);
 
 
 impl<T> Sum<T> for Decimal where T: Borrow<Decimal> {
-    fn sum<I: IntoIterator<Item = T>>(iter: I) -> Decimal {
+    fn sum<I: IntoIterator<Item=T>>(iter: I) -> Decimal {
         iter.into_iter()
             .fold(Decimal::zero(), |acc, val| acc + val.borrow())
     }
@@ -393,7 +416,6 @@ impl<T> Sum<T> for Decimal where T: Borrow<Decimal> {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
 
     #[cfg(feature = "serde")]
@@ -458,7 +480,6 @@ mod tests {
         assert_eq!(x, decimal!(9));
         x -= decimal!(1);
         assert_eq!(x, decimal!(8));
-        
     }
 
     #[test]
@@ -467,5 +488,4 @@ mod tests {
         assert_eq!(decimal!(10), decimals.iter().sum());
         assert_eq!(decimal!(10), decimals.into_iter().sum());
     }
-
 }
