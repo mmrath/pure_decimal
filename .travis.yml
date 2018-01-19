@@ -1,86 +1,43 @@
-# Based on the "trust" template v0.1.2
-# https://github.com/japaric/trust/tree/v0.1.2
-
-dist: trusty
+---
 language: rust
-services: docker
-sudo: required
+rust:
+  - stable
+  - beta
+  - nightly
+os:
+  - linux
+sudo: false
 
-# TODO Rust builds on stable by default, this can be
-# overridden on a case by case basis down below.
 
-env:
-  global:
-    # TODO Update this to match the name of your project.
-    - CRATE_NAME=pure_decimal
+cache:
+  cargo: true
 
-matrix:
-  # TODO These are all the build jobs. Adjust as necessary. Comment out what you
-  # don't need
-  include:
-    # Linux
-    - env: TARGET=aarch64-unknown-linux-gnu
-    - env: TARGET=arm-unknown-linux-gnueabi
-    - env: TARGET=i686-unknown-linux-gnu
-    - env: TARGET=x86_64-unknown-linux-gnu
-
-    # *BSD
-    - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
-    - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
-    - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
-
-    # Windows
-    - env: TARGET=x86_64-pc-windows-gnu
-
-    # Testing other channels
-    - env: TARGET=x86_64-unknown-linux-gnu
-      rust: nightly
-
-before_install:
-  - set -e
-  - rustup self update
-
-install:
-  - sh ci/install.sh
-  - source ~/.cargo/env || true
+before_script:
+  - cargo clean
 
 script:
-  - bash ci/script.sh
+  # Build without unstable flag
+  - cargo build --release --verbose
 
-after_script: set +e
+  # Test
+  - cargo test --verbose -- --nocapture
 
-before_deploy:
-  - sh ci/before_deploy.sh
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
+          cargo +nightly build --features "clippy"
+    fi'
+
 
 deploy:
-  # TODO update `api_key.secure`
-  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
-  # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
-  # - Paste the output down here
-  api_key:
-    secure: "Ye/g1ctT8WjMF9Fnp78geAvI/4DLXRGBJHnVpRjTXbzkhRoxKie/6s2GX6Xm9V7AdnQsC5UL+LufXQm+KhP4slx45hy8PvlLTQvFhEK3QoaMjKddwNJaRFIxR46gwofSSF2YscNNZOkilm7WdbRRv9xTe4N30LtORr4/p6WT5JeCGFHqS2rHDUYG4WdkjdN48dc0IozXFi8t17g/MBsmSzDVsY2Vd/p1YU3DJhX5uZK+J4Ib7IxyFgehiREq59tbJdSDI8JRH7O1pwFDv6qKoByne3vp2sk9lGPooQ+3U7m0h7W0Qmqx7knp3sokfHX/c9vYrlB/Bv0EFhL8jUzo60KinTKUbIv+9puz/ZrY3FJ850lQTLi3lr2Ac5zWIve5zi5TFFA2JZaKHBDbH3Fp95vLeLS1dH93fv+gERxOk4Be6BePy5M6FWXi0KnAcqZwrBk1N3Vxg/bxVEhWjKLKrhyAEj3kYBv8BpUGfu1CdRaKKaOJQg7IpCNHZLZGXZ+NPNpYRjdZSRDllyu193JSEPtUGAtEHwbZg3wGhRtuGaPh60t1MRvdutqT3AoHzMb6g23jHuqq60Cp/b8aigXFLGFpaXEOGan+aM185ihEwMJE5JPD1nKkA0wPidlUaMUb+6EYxVz8PlbyX9mTtd3F0syH0qtnBdZYMUzWM2jp8fc="
-  file_glob: true
-  file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
-  on:
-    # TODO Here you can pick which targets will generate binary releases
-    # In this example, there are some targets that are tested using the stable
-    # and nightly channels. This condition makes sure there is only one release
-    # for such targets and that's generated using the stable channel
-    condition: $TRAVIS_RUST_VERSION = stable
-    tags: true
-  provider: releases
+  provider: script
+  script: ci/publish.sh
   skip_cleanup: true
+  api-key:
+    secure: YUXdO4SZv3+Cm550DGc9WLYRWHaBC4LWYkJK2sbR+GjSkNSvKHfxOe0+pDzJGHNY+QOWKal37H6bCGmk43xHgwWExb0nZ+Vp1nJG/nUeTcglF4tYSX+GJQEOioj1YmaOai0NuJ1peDS8TZXYmbghMc4vnLUnYg7t4gQ3m8M/fVY=
+  on:
+    tags: true
+    all_branches: false
 
-cache: cargo
-before_cache:
-  # Travis can't cache files that are not readable by "others"
-  - chmod -R a+r $HOME/.cargo
 
-branches:
-  only:
-    # release tags
-    - /^v\d+\.\d+\.\d+.*$/
-    - master
 
 notifications:
   email:

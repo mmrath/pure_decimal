@@ -191,7 +191,7 @@ impl From<i64> for Decimal {
 
 impl AsRef<Decimal> for Decimal {
     fn as_ref(&self) -> &Decimal {
-        &self
+        self
     }
 }
 
