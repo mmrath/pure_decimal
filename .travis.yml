@@ -8,6 +8,9 @@ os:
   - linux
 sudo: false
 
+matrix:
+    allow_failures:
+        - rust: nightly
 
 cache:
   cargo: true
@@ -22,9 +25,10 @@ script:
   # Test
   - cargo test --verbose -- --nocapture
 
-  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
-          cargo +nightly build --features "clippy"
-    fi'
+  - |
+    if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
+        cargo +nightly build --features "clippy"
+    fi
 
 
 deploy:
