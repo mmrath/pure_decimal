@@ -22,12 +22,12 @@ use super::error::Error;
 ///
 /// // Use as keys in BTree
 /// let mut map = BTreeMap::new();
-/// map.insert(decimal!(1.0), decimal!(1.0));
-/// map.insert(decimal!(1), decimal!(2.0));
+/// map.insert(dec!(1.0), dec!(1.0));
+/// map.insert(dec!(1), dec!(2.0));
 ///
 /// assert!(map.len() == 1);
-/// assert!(map.contains_key(&decimal!(1.00)));
-/// assert!(map.get(&decimal!(1.00)) == Some(&decimal!(2.0)));
+/// assert!(map.contains_key(&dec!(1.00)));
+/// assert!(map.get(&dec!(1.00)) == Some(&dec!(2.0)));
 ///
 /// # }
 /// ```
@@ -355,12 +355,6 @@ impl<T> Sum<T> for Decimal where T: Borrow<Decimal> {
 mod tests {
     use super::*;
 
-    #[cfg(feature = "serde")]
-    use serde_json::{from_str, to_string};
-
-    #[cfg(feature = "serde")]
-    use std::collections::BTreeMap;
-
     #[test]
     fn default() {
         use std::str::FromStr;
@@ -373,42 +367,42 @@ mod tests {
 
     #[test]
     fn unary_op() {
-        assert_eq!(decimal!(-1.1), -decimal!(1.1));
-        assert_eq!(decimal!(-1.1), -&decimal!(1.1));
+        assert_eq!(dec!(-1.1), -dec!(1.1));
+        assert_eq!(dec!(-1.1), -&dec!(1.1));
     }
 
     #[test]
     fn binary_op() {
-        assert_eq!(decimal!(3.33), decimal!(1.11) + decimal!(2.22));
-        assert_eq!(decimal!(3.33), &decimal!(1.11) + decimal!(2.22));
-        assert_eq!(decimal!(3.33), decimal!(1.11) + &decimal!(2.22));
-        assert_eq!(decimal!(3.33), &decimal!(1.11) + &decimal!(2.22));
-        //assert_eq!(decimal!(5) << 2, decimal!(500));
-        //assert_eq!(decimal!(500) >> 1, decimal!(50));
+        assert_eq!(dec!(3.33), dec!(1.11) + dec!(2.22));
+        assert_eq!(dec!(3.33), &dec!(1.11) + dec!(2.22));
+        assert_eq!(dec!(3.33), dec!(1.11) + &dec!(2.22));
+        assert_eq!(dec!(3.33), &dec!(1.11) + &dec!(2.22));
+        //assert_eq!(dec!(5) << 2, dec!(500));
+        //assert_eq!(dec!(500) >> 1, dec!(50));
     }
 
     #[test]
     fn as_ref_operand() {
-        assert_eq!(decimal!(1.1), decimal!(1.1).min(decimal!(2.2)));
-        assert_eq!(decimal!(1.1), decimal!(1.1).min(&decimal!(2.2)));
+        assert_eq!(dec!(1.1), dec!(1.1).min(dec!(2.2)));
+        assert_eq!(dec!(1.1), dec!(1.1).min(&dec!(2.2)));
     }
 
 
     #[test]
     fn assign_op() {
-        let mut x = decimal!(1);
-        x += decimal!(2);
-        assert_eq!(x, decimal!(3));
-        x *= decimal!(3);
-        assert_eq!(x, decimal!(9));
-        x -= decimal!(1);
-        assert_eq!(x, decimal!(8));
+        let mut x = dec!(1);
+        x += dec!(2);
+        assert_eq!(x, dec!(3));
+        x *= dec!(3);
+        assert_eq!(x, dec!(9));
+        x -= dec!(1);
+        assert_eq!(x, dec!(8));
     }
 
     #[test]
     fn test_sum() {
-        let decimals = vec![decimal!(1), decimal!(2), decimal!(3), decimal!(4)];
-        assert_eq!(decimal!(10), decimals.iter().sum());
-        assert_eq!(decimal!(10), decimals.into_iter().sum());
+        let decimals = vec![dec!(1), dec!(2), dec!(3), dec!(4)];
+        assert_eq!(dec!(10), decimals.iter().sum());
+        assert_eq!(dec!(10), decimals.into_iter().sum());
     }
 }

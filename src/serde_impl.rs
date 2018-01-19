@@ -77,7 +77,6 @@ mod tests {
 
 
     extern crate serde_json;
-    use serde::{Serialize,Deserialize};
     use super::*;
 
     #[derive(Serialize, Deserialize, Debug)]
@@ -121,7 +120,7 @@ mod tests {
 
     #[test]
     fn serialize_decimal() {
-        let record = Record { amount: decimal!(1.234) };
+        let record = Record { amount: dec!(1.234) };
         let serialized = serde_json::to_string(&record).unwrap();
         assert_eq!("{\"amount\":\"1.234\"}", serialized);
     }

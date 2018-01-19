@@ -1,3 +1,6 @@
+#![cfg_attr(feature="clippy", feature(plugin))]
+#![cfg_attr(feature="clippy", plugin(clippy))]
+
 extern crate decimal;
 
 #[cfg(feature = "serde")]
@@ -17,6 +20,7 @@ extern crate serde_derive;
 
 
 
+
 #[macro_use]
 mod macros {
     /// A macro to construct Decimal literals.
@@ -30,13 +34,13 @@ mod macros {
     /// # use std::collections::BTreeMap;
     ///
     /// # fn main() {
-    /// assert!(decimal!(0).is_zero());
-    /// assert!(decimal!(-0.1).is_negative());
+    /// assert!(dec!(0).is_zero());
+    /// assert!(dec!(-0.1).is_negative());
     ///
     /// # }
     /// ```
     #[macro_export]
-    macro_rules! decimal {
+    macro_rules! dec {
         ($lit:expr) => {{
             use std::str::FromStr;
             $crate::Decimal::from_str(stringify!($lit)).expect("Invalid decimal float literal")
