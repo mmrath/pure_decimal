@@ -33,7 +33,7 @@ script:
 
 deploy:
   provider: script
-  script: ci/publish.sh
+  script: scripts/ci_publish.sh
   skip_cleanup: true
   api-key:
     secure: YUXdO4SZv3+Cm550DGc9WLYRWHaBC4LWYkJK2sbR+GjSkNSvKHfxOe0+pDzJGHNY+QOWKal37H6bCGmk43xHgwWExb0nZ+Vp1nJG/nUeTcglF4tYSX+GJQEOioj1YmaOai0NuJ1peDS8TZXYmbghMc4vnLUnYg7t4gQ3m8M/fVY=
