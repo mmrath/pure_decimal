@@ -1,6 +1,6 @@
 [package]
 name = "pure_decimal"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Murali Mohan Rath <murali@mmrath.com>"]
 description = "A decimal type with no NaN and Infinity"
 repository = "https://github.com/mmrath/pure_decimal"
@@ -14,6 +14,7 @@ serde = { optional = true, version = "1" }
 
 [dev-dependencies]
 serde_json = "1"
+serde_derive = "1"
 
 [features]
 default = ["serde"]

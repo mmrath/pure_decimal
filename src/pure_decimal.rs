@@ -5,7 +5,6 @@ use std::hash::{Hash, Hasher};
 use std::default::Default;
 use std::ops::{Add, Div, Mul, Neg, Rem, Sub, AddAssign, SubAssign, MulAssign};
 use std::borrow::Borrow;
-use serde;
 use std::iter::Sum;
 
 use super::error::Error;
@@ -33,7 +32,7 @@ use super::error::Error;
 /// # }
 /// ```
 #[derive(Clone, Copy)]
-pub struct Decimal(d128);
+pub struct Decimal(pub(crate) d128);
 
 impl Decimal {
     /// Creates a Decimal with `0` as value
@@ -138,69 +137,6 @@ impl fmt::LowerHex for Decimal {
     }
 }
 
-#[cfg(feature = "serde")]
-impl serde::ser::Serialize for Decimal {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::ser::Serializer,
-    {
-        serializer.serialize_str(&self.0.to_string())
-    }
-}
-
-#[cfg(feature = "serde")]
-impl<'de> serde::de::Deserialize<'de> for Decimal {
-    fn deserialize<D>(deserializer: D) -> Result<Decimal, D::Error>
-        where
-            D: serde::de::Deserializer<'de>,
-    {
-        deserializer.deserialize_any(SerdeDecimalVisitor)
-    }
-}
-
-#[cfg(feature = "serde")]
-#[allow(non_camel_case_types)]
-struct SerdeDecimalVisitor;
-
-#[cfg(feature = "serde")]
-impl<'de> serde::de::Visitor<'de> for SerdeDecimalVisitor {
-    type Value = Decimal;
-
-    fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "a Decimal value")
-    }
-
-    fn visit_str<E>(self, s: &str) -> Result<Decimal, E>
-        where
-            E: serde::de::Error,
-    {
-        use serde::de::Unexpected;
-        Decimal::from_str(s).map_err(|_| E::invalid_value(Unexpected::Str(s), &self))
-    }
-
-
-    fn visit_f64<E>(self, value: f64) -> Result<Decimal, E>
-        where
-            E: serde::de::Error,
-    {
-        use serde::de::Unexpected;
-        Decimal::from_str(&value.to_string()).map_err(|_| E::invalid_value(Unexpected::Float(value), &self))
-    }
-
-    fn visit_i64<E>(self, value: i64) -> Result<Decimal, E>
-        where
-            E: serde::de::Error,
-    {
-        Ok(Decimal::from(value))
-    }
-
-    fn visit_u64<E>(self, value: u64) -> Result<Decimal, E>
-        where
-            E: serde::de::Error,
-    {
-        Ok(Decimal::from(value))
-    }
-}
 
 impl PartialEq<Decimal> for Decimal {
     fn eq(&self, other: &Decimal) -> bool {
@@ -414,6 +350,7 @@ impl<T> Sum<T> for Decimal where T: Borrow<Decimal> {
 }
 
 
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -432,20 +369,6 @@ mod tests {
         assert_eq!(Decimal::zero(), Default::default());
         assert_eq!(Decimal::zero(), Decimal::from_str("0").unwrap());
         assert_eq!(Decimal::zero(), Decimal::from_str("0.0").unwrap());
-    }
-
-    #[cfg(feature = "serde")]
-    #[test]
-    fn test_serde() {
-        let mut a = BTreeMap::new();
-        a.insert("price".to_string(), decimal!(432.232));
-        a.insert("amt".to_string(), decimal!(9.9));
-        assert_eq!(
-            &to_string(&a).unwrap(),
-            "{\"amt\":\"9.9\",\"price\":\"432.232\"}"
-        );
-        let b = from_str("{\"price\":\"432.232\",\"amt\":\"9.9\"}").unwrap();
-        assert_eq!(a, b);
     }
 
     #[test]

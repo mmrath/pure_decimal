@@ -7,6 +7,11 @@ extern crate serde;
 #[cfg(test)]
 extern crate serde_json;
 
+#[cfg(feature = "serde")]
+#[cfg(test)]
+#[macro_use]
+extern crate serde_derive;
+
 
 
 
@@ -41,6 +46,8 @@ mod macros {
 
 mod error;
 mod pure_decimal;
+mod serde_impl;
 
 pub use error::Error;
 pub use pure_decimal::Decimal;
+pub use serde_impl::*;
