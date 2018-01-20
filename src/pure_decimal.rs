@@ -66,6 +66,10 @@ impl Decimal {
         self.0.is_negative()
     }
 
+    pub fn is_positive(&self) -> bool {
+        !self.0.is_negative()
+    }
+
     /// returns true if `self` is zero
     pub fn is_zero(&self) -> bool {
         self.0.is_zero()
