@@ -20,9 +20,9 @@ This crate provides a `Decimal` type which is a wrapper around [decimal](https:/
 extern crate pure_decimal;
 
 fn main() {
-    let x = decimal!(1.234);
-    let y = decimal!(1.111);
-    let z = decimal!(2.345);
+    let x = dec!(1.234);
+    let y = dec!(1.111);
+    let z = dec!(2.345);
     assert_eq(x + y, z);
 }
 ```
