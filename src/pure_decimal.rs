@@ -67,7 +67,7 @@ impl Decimal {
     }
 
     pub fn is_positive(&self) -> bool {
-        !self.0.is_negative()
+        self.0.is_positive()
     }
 
     /// returns true if `self` is zero
@@ -373,6 +373,22 @@ mod tests {
     fn unary_op() {
         assert_eq!(dec!(-1.1), -dec!(1.1));
         assert_eq!(dec!(-1.1), -&dec!(1.1));
+    }
+
+    #[test]
+    fn utility_functions() {
+        assert!(dec!(0.0).is_zero());
+        assert_ne!(true,dec!(0.0).is_negative());
+        assert_ne!(true,dec!(0.0).is_positive());
+
+        assert_ne!(true,dec!(0.1).is_zero());
+        assert_ne!(true,dec!(0.1).is_negative());
+        assert!(dec!(0.1).is_positive());
+
+        assert_ne!(true,dec!(-0.1).is_zero());
+        assert!(dec!(-0.1).is_negative());
+        assert_ne!(true,dec!(-0.1).is_positive());
+
     }
 
     #[test]
